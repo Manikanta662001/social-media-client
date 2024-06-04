@@ -1,5 +1,6 @@
 import { toast } from "react-toastify";
 
+export const BE_URL = "http://localhost:5000";
 export const getFullName = (user) => {
   if (user) {
     return `${user?.firstName} ${user?.lastName}`;

@@ -17,7 +17,7 @@ import { useDispatch } from "react-redux";
 import { setLogin } from "../../state";
 import Dropzone from "react-dropzone";
 import FlexBetween from "../../components/FlexBetween";
-import { getpage, notification } from "../../utils/constants";
+import { BE_URL, getpage, notification } from "../../utils/constants";
 
 const registerSchema = YUP.object().shape({
   firstName: YUP.string().required("required").min(3, "Minimum 3 Characters"),
@@ -60,7 +60,7 @@ const Form = () => {
       const formData = new FormData();
       formData.append("user", JSON.stringify(values));
       formData.append("picture", values.picture);
-      const res = await fetch("/auth/register", {
+      const res = await fetch(BE_URL + "/auth/register", {
         method: "POST",
         body: formData,
       });
@@ -77,7 +77,7 @@ const Form = () => {
   };
   const login = async (values, onSubmitProps) => {
     try {
-      const res = await fetch("/auth/login", {
+      const res = await fetch(BE_URL + "/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(values),
@@ -86,8 +86,9 @@ const Form = () => {
       const userData = await res.json();
       if (userData) {
         notification("Login Successful", "");
+        onSubmitProps.resetForm();
         dispatch(setLogin(userData));
-        navigate(`/profile/${userData.user._id}`);
+        navigate("/home");
       }
     } catch (error) {
       notification("", error.message);
