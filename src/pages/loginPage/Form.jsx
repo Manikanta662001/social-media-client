@@ -6,23 +6,24 @@ import {
   useMediaQuery,
   Typography,
   useTheme,
-  Alert,
 } from "@mui/material";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { Formik } from "formik";
 import * as YUP from "yup";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setLogin } from "../../state";
-import Dropzone, { useDropzone } from "react-dropzone";
+import Dropzone from "react-dropzone";
 import FlexBetween from "../../components/FlexBetween";
-import { loginpageType } from "../../utils/constants";
+import { getpage, notification } from "../../utils/constants";
 
 const registerSchema = YUP.object().shape({
-  firstName: YUP.string().required("required"),
-  lastName: YUP.string().required("required"),
+  firstName: YUP.string().required("required").min(3, "Minimum 3 Characters"),
+  lastName: YUP.string().required("required").min(3, "Minimum 3 Characters"),
   email: YUP.string().email("Enter a Valid email").required("required"),
-  password: YUP.string().required("required"),
+  password: YUP.string().required("required").min(6, "Minimum 6 Characters"),
   location: YUP.string().required("required"),
   occupation: YUP.string().required("required"),
   picture: YUP.mixed().required("required"),
@@ -30,7 +31,7 @@ const registerSchema = YUP.object().shape({
 
 const loginSchema = YUP.object().shape({
   email: YUP.string().email("Enter a Valid email").required("required"),
-  password: YUP.string().required("required"),
+  password: YUP.string().required("required").min(6, "Minimum 6 Characters"),
 });
 
 const registerInitialValues = {
@@ -65,10 +66,12 @@ const Form = () => {
       });
       const userData = await res.json();
       if (userData) {
+        notification("User Registered Successfully", "");
         onSubmitProps.resetForm();
         setPageType("login");
       }
     } catch (error) {
+      notification("", error.message);
       console.error("ERR::::", error.message);
     }
   };
@@ -82,17 +85,19 @@ const Form = () => {
       console.log("RES::::", res);
       const userData = await res.json();
       if (userData) {
+        notification("Login Successful", "");
         dispatch(setLogin(userData));
         navigate(`/profile/${userData.user._id}`);
       }
     } catch (error) {
+      notification("", error.message);
       console.error("ERR::::", error.message);
     }
   };
 
   const handleFormSubmit = (values, onSubmitProps) => {
     console.log("VALS::::", values, onSubmitProps);
-    if (loginpageType(pageType)) {
+    if (getpage(pageType)) {
       login(values, onSubmitProps);
     } else {
       register(values, onSubmitProps);
@@ -101,9 +106,9 @@ const Form = () => {
   return (
     <Formik
       initialValues={
-        loginpageType(pageType) ? loginInitialValues : registerInitialValues
+        getpage(pageType) ? loginInitialValues : registerInitialValues
       }
-      validationSchema={loginpageType(pageType) ? loginSchema : registerSchema}
+      validationSchema={getpage(pageType) ? loginSchema : registerSchema}
       onSubmit={handleFormSubmit}
     >
       {({
@@ -117,6 +122,7 @@ const Form = () => {
         resetForm,
       }) => (
         <>
+          <ToastContainer />
           <form onSubmit={handleSubmit}>
             <Box
               display="grid"
@@ -128,7 +134,7 @@ const Form = () => {
                 },
               }}
             >
-              {!loginpageType(pageType) && (
+              {!getpage(pageType) && (
                 <>
                   <TextField
                     label="First Name"
@@ -186,8 +192,8 @@ const Form = () => {
                   >
                     <Dropzone
                       accept={{
-                        'image/jpeg':['.jpg','.jpeg',],
-                        'image/png': ['.png'],
+                        "image/jpeg": [".jpg", ".jpeg"],
+                        "image/png": [".png"],
                       }}
                       multiple={false}
                       onDrop={(acceptedFiles) => {
@@ -251,11 +257,11 @@ const Form = () => {
                   "&:hover": { color: palette.primary.main },
                 }}
               >
-                {loginpageType(pageType) ? "LOGIN" : "REGISTER"}
+                {getpage(pageType) ? "LOGIN" : "REGISTER"}
               </Button>
               <Typography
                 onClick={() => {
-                  setPageType(loginpageType(pageType) ? "register" : "login");
+                  setPageType(getpage(pageType) ? "register" : "login");
                   resetForm();
                 }}
                 sx={{
@@ -266,7 +272,7 @@ const Form = () => {
                   },
                 }}
               >
-                {loginpageType(pageType)
+                {getpage(pageType)
                   ? "Don't have an account? Sign Up here."
                   : "Already have an account? Login here."}
               </Typography>

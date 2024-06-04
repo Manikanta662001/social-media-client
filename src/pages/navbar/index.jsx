@@ -24,7 +24,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { setMode, setLogout } from "../../state";
 import { useNavigate } from "react-router-dom";
 import FlexBetween from "../../components/FlexBetween";
-import { fullName } from "../../utils/constants";
+import { getFullName } from "../../utils/constants";
 
 const Navbar = () => {
   const [isMobileMenuToggled, setIsMobileMenuToggled] = useState(false);
@@ -85,9 +85,9 @@ const Navbar = () => {
           <Message sx={{ fontSize: "25px" }} />
           <Notifications sx={{ fontSize: "25px" }} />
           <Help sx={{ fontSize: "25px" }} />
-          <FormControl variant="standard" value={fullName(user)}>
+          <FormControl variant="standard" value={getFullName(user)}>
             <Select
-              value={fullName(user)}
+              value={getFullName(user)}
               sx={{
                 backgroundColor: neutralLight,
                 width: "150px",
@@ -103,8 +103,8 @@ const Navbar = () => {
               }}
               input={<InputBase />}
             >
-              <MenuItem value={fullName(user)}>
-                <Typography>{fullName(user)}</Typography>
+              <MenuItem value={getFullName(user)}>
+                <Typography>{getFullName(user)}</Typography>
               </MenuItem>
               <MenuItem onClick={() => dispatch(setLogout())}>Log Out</MenuItem>
             </Select>
@@ -160,9 +160,9 @@ const Navbar = () => {
             <Message sx={{ fontSize: "25px" }} />
             <Notifications sx={{ fontSize: "25px" }} />
             <Help sx={{ fontSize: "25px" }} />
-            <FormControl variant="standard" value={fullName(user)}>
+            <FormControl variant="standard" value={getFullName(user)}>
               <Select
-                value={fullName(user)}
+                value={getFullName(user)}
                 sx={{
                   backgroundColor: neutralLight,
                   width: "150px",
@@ -178,8 +178,8 @@ const Navbar = () => {
                 }}
                 input={<InputBase />}
               >
-                <MenuItem value={fullName(user)}>
-                  <Typography>{fullName(user)}</Typography>
+                <MenuItem value={getFullName(user)}>
+                  <Typography>{getFullName(user)}</Typography>
                 </MenuItem>
                 <MenuItem onClick={() => dispatch(setLogout())}>
                   Log Out
