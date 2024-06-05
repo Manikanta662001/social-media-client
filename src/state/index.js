@@ -31,11 +31,11 @@ const authSlice = createSlice({
         console.error("User does not exist");
       }
     },
-    setPosts: (state, action) => {
-      const { posts } = action.payload;
-      state.posts = posts;
+    setAllPosts: (state, action) => {
+      const { allPosts } = action.payload;
+      state.posts = allPosts;
     },
-    setPost: (state, action) => {
+    updatePost: (state, action) => {
       const { post_id, post } = action.payload;
       const updatedPosts = state.posts.map((onepost) => {
         if (onepost._id === post_id) return post;
@@ -45,6 +45,12 @@ const authSlice = createSlice({
     },
   },
 });
-export const { setMode, setLogin, setLogout, setFriends, setPosts, setPost } =
-  authSlice.actions;
+export const {
+  setMode,
+  setLogin,
+  setLogout,
+  setFriends,
+  setAllPosts,
+  updatePost,
+} = authSlice.actions;
 export default authSlice.reducer;
