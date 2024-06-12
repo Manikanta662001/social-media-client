@@ -22,37 +22,37 @@ import FlexBetween from "../../components/FlexBetween";
 import Dropzone from "react-dropzone";
 import UserImage from "../../components/UserImage";
 import WidgetWrapper from "../../components/WidgetWrapper";
-import { useSelector, useDispatch } from "react-redux";
-import { setAllPosts } from "../../state";
 import { BE_URL } from "../../utils/constants";
+import { useUserContext } from "../../components/authContext/AuthContext";
+import { getTokenFromCookie } from "../../utils/utils";
 const MyPostWidget = ({ picturePath }) => {
-  const dispatch = useDispatch();
   const [isImage, setIsImage] = useState(false);
   const [image, setImage] = useState(null);
   const [post, setPost] = useState("");
-  const { _id } = useSelector((state) => state.user);
-  const token = useSelector((state) => state.token);
+  const token = getTokenFromCookie();
+  const { user, setAllPosts } = useUserContext();
+  const { _id } = user;
   const { palette } = useTheme();
   const isNonMobileScreen = useMediaQuery("(min-width:1000px)");
   const mediumMain = palette.neutral.mediumMain;
   const medium = palette.neutral.medium;
+  console.log("USER::",user)
   const handleCreatePost = async () => {
     try {
       const formData = new FormData();
       formData.append("userId", _id);
       formData.append("description", post);
-      formData.append("description", post);
       if (image) {
         formData.append("picture", image);
         formData.append("picturePath", image.name);
       }
-      const response = await fetch(BE_URL + `/posts`, {
+      const response = await fetch(BE_URL + `/createPost`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
         body: formData,
       });
       const allPosts = await response.json();
-      dispatch(setAllPosts({ allPosts }));
+      setAllPosts({ allPosts });
       setImage(null);
       setPost("");
     } catch (error) {

@@ -2,12 +2,13 @@ import React from "react";
 import { Box, useMediaQuery } from "@mui/material";
 import Navbar from "../navbar/index";
 import UserWidget from "../widgets/UserWidget";
-import { useSelector } from "react-redux";
 import MyPostWidget from "../widgets/MyPostWidget";
+import { useUserContext } from "../../components/authContext/AuthContext";
 
 const HomePage = () => {
   const isNonMobileScreens = useMediaQuery("(min-width: 1000px)");
-  const { _id, picturePath } = useSelector((state) => state.user);
+  const { user } = useUserContext();
+  const {_id, picturePath} = user;
 
   return (
     <Box>

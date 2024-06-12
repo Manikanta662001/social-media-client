@@ -13,11 +13,11 @@ import "react-toastify/dist/ReactToastify.css";
 import { Formik } from "formik";
 import * as YUP from "yup";
 import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { setLogin } from "../../state";
 import Dropzone from "react-dropzone";
 import FlexBetween from "../../components/FlexBetween";
-import { BE_URL, getpage, notification } from "../../utils/constants";
+import { BE_URL } from "../../utils/constants";
+import { getpage, notification, setCookie } from "../../utils/utils";
+import { useUserContext } from "../../components/authContext/AuthContext";
 
 const registerSchema = YUP.object().shape({
   firstName: YUP.string().required("required").min(3, "Minimum 3 Characters"),
@@ -53,7 +53,7 @@ const Form = () => {
   const [pageType, setPageType] = useState("login");
   const { palette } = useTheme();
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const { setUser, setIsLogedIn } = useUserContext();
   const isNonMobileScreens = useMediaQuery("(min-width:600px)");
   const register = async (values, onSubmitProps) => {
     try {
@@ -65,11 +65,12 @@ const Form = () => {
         body: formData,
       });
       const userData = await res.json();
-      if (userData) {
-        notification("User Registered Successfully", "");
-        onSubmitProps.resetForm();
-        setPageType("login");
+      if (!res.ok) {
+        throw new Error(userData.error);
       }
+      notification(userData.message, "");
+      onSubmitProps.resetForm();
+      setPageType("login");
     } catch (error) {
       notification("", error.message);
       console.error("ERR::::", error.message);
@@ -82,14 +83,18 @@ const Form = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(values),
       });
-      console.log("RES::::", res);
       const userData = await res.json();
-      if (userData) {
-        notification("Login Successful", "");
-        onSubmitProps.resetForm();
-        dispatch(setLogin(userData));
-        navigate("/home");
+      console.log("RES::::", res, userData);
+      if (!res.ok) {
+        throw new Error(userData.error);
       }
+      const { user, token, message } = userData;
+      notification(message, "");
+      onSubmitProps.resetForm();
+      setUser(user);
+      setIsLogedIn(true);
+      setCookie(token, 2);
+      navigate("/home");
     } catch (error) {
       notification("", error.message);
       console.error("ERR::::", error.message);
@@ -97,7 +102,6 @@ const Form = () => {
   };
 
   const handleFormSubmit = (values, onSubmitProps) => {
-    console.log("VALS::::", values, onSubmitProps);
     if (getpage(pageType)) {
       login(values, onSubmitProps);
     } else {
