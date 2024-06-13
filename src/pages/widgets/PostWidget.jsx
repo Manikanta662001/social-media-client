@@ -11,6 +11,7 @@ import {
 import { BE_URL } from "../../utils/constants";
 import FlexBetween from "../../components/FlexBetween";
 import { useUserContext } from "../../components/authContext/AuthContext";
+import { getTokenFromCookie } from "../../utils/utils";
 
 const PostWidget = (props) => {
   const {
@@ -27,11 +28,33 @@ const PostWidget = (props) => {
 
   const [showComments, setShowComments] = useState(false);
   const { palette } = useTheme();
-  const { user } = useUserContext();
+  const { user, allPosts, setAllPosts } = useUserContext();
   const main = palette.neutral.main;
-  const primary = palette.primary.main;
   const isLiked = Boolean(likes[user._id]);
   const likeCount = Object.keys(likes).length;
+
+  const handleLike = async (postId) => {
+    try {
+      const response = await fetch(BE_URL + `/posts/${postId}/like`, {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${getTokenFromCookie()}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ userId: user._id }),
+      });
+      const post = await response.json();
+      const updatedPosts = allPosts.map((eachPost, ind) => {
+        if (eachPost._id === post._id) {
+          return post;
+        }
+        return eachPost;
+      });
+      setAllPosts(updatedPosts);
+    } catch (error) {
+      console.error(error.message);
+    }
+  };
   return (
     <WidgetWrapper m={"2rem 0"}>
       <Friend
@@ -55,9 +78,9 @@ const PostWidget = (props) => {
       <FlexBetween mt={"0.25rem"}>
         <FlexBetween gap={"1rem"}>
           <FlexBetween gap={"0.3rem"}>
-            <IconButton>
+            <IconButton onClick={() => handleLike(postId)}>
               {isLiked ? (
-                <FavoriteOutlined sx={{ color: primary }} />
+                <FavoriteOutlined sx={{ color: "red" }} />
               ) : (
                 <FavoriteBorderOutlined />
               )}

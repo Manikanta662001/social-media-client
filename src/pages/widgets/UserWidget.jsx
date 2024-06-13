@@ -16,19 +16,19 @@ import twitter from "../../assets/twitter.png";
 import linkedin from "../../assets/linkedin.png";
 import { useUserContext } from "../../components/authContext/AuthContext";
 
-const UserWidget = () => {
+const UserWidget = ({ userId, picturePath }) => {
   const [profile, setProfile] = useState(null);
   const { palette } = useTheme();
   const navigate = useNavigate();
   const token = getTokenFromCookie();
   const { user } = useUserContext();
-  const { _id } = user;
+  // const { _id } = user;
   const dark = palette.neutral.dark;
   const medium = palette.neutral.medium;
   const main = palette.neutral.main;
   const getUser = async () => {
     try {
-      const response = await fetch(BE_URL + `/users/${_id}`, {
+      const response = await fetch(BE_URL + `/users/${userId}`, {
         method: "GET",
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -43,7 +43,7 @@ const UserWidget = () => {
   };
   useEffect(() => {
     getUser();
-  }, []);
+  }, [user]);
   return (
     <>
       {profile ? (
@@ -52,10 +52,10 @@ const UserWidget = () => {
           <FlexBetween
             gap="0.5rem"
             pb="1.1rem"
-            // onClick={navigate(`/profile/${user._id}`)}
+            onClick={() => navigate(`/profile/${userId}`)}
           >
             <FlexBetween gap={"1rem"}>
-              <UserImage image={profile.picturePath} />
+              <UserImage image={picturePath} />
               <Box>
                 <Typography
                   variant="h4"

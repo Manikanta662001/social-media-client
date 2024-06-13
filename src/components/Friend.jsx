@@ -64,7 +64,7 @@ const Friend = (props) => {
           sx={{ color: primaryLight, p: "0.6rem" }}
           onClick={handleAddOrRemoveFriend}
         >
-          {isFriendOrNot!==undefined ? (
+          {isFriendOrNot !== undefined ? (
             <PersonRemoveOutlined sx={{ color: primaryDark }} />
           ) : (
             <PersonAddOutlined sx={{ color: primaryDark }} />

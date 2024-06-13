@@ -11,7 +11,7 @@ import { getTokenFromCookie } from "./utils/utils";
 import { BE_URL } from "./utils/constants";
 
 function App() {
-  const { mode, isLogedIn,setUser ,setIsLogedIn} = useUserContext();
+  const { mode, isLogedIn, setUser, setIsLogedIn } = useUserContext();
   const theme = useMemo(() => createTheme(themeSettings(mode)), [mode]);
   const navigate = useNavigate();
   const getUser = async () => {
@@ -26,7 +26,7 @@ function App() {
       }
       setUser(userData);
       setIsLogedIn(true);
-      navigate('/home')
+      navigate("/home");
     } catch (error) {
       console.error(error?.message);
     }
@@ -36,22 +36,20 @@ function App() {
   }, []);
   return (
     <div className="app">
-        <ThemeProvider theme={theme}>
-          <CssBaseline />
-          <Routes>
-            <Route path="/" element={<LoginPage />} />
-            <Route
-              path="/home"
-              element={isLogedIn ? <HomePage /> : <Navigate to={"/"} />}
-            />
-            <Route
-              path="/profile/:userId"
-              element={
-                isLogedIn ? <ProfilePage /> : <Navigate to={"/"} />
-              }
-            />
-          </Routes>
-        </ThemeProvider>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <Routes>
+          <Route path="/" element={<LoginPage />} />
+          <Route
+            path="/home"
+            element={isLogedIn ? <HomePage /> : <Navigate to={"/"} />}
+          />
+          <Route
+            path="/profile/:userId"
+            element={isLogedIn ? <ProfilePage /> : <Navigate to={"/"} />}
+          />
+        </Routes>
+      </ThemeProvider>
     </div>
   );
 }

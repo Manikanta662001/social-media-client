@@ -40,7 +40,7 @@ export const getTokenFromCookie = () => {
   let allCookies = document.cookie.split();
   if (allCookies) {
     let loginCookie = allCookies.filter((cookie) =>
-      cookie.includes("logincookie")
+      cookie.includes("logincookie"),
     );
     if (loginCookie) {
       loginCookie = loginCookie[0].split("=");
