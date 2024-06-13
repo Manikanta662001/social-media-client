@@ -2,21 +2,18 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
 import App from "./App";
-import { configureStore } from "@reduxjs/toolkit";
-import { Provider } from "react-redux";
-import authReducer from "./state/index";
+import AuthContext from "./components/authContext/AuthContext";
+import { BrowserRouter } from "react-router-dom";
 
-const store = configureStore({
-  reducer: authReducer,
-  middleware: (getDefaultMiddleware) => getDefaultMiddleware(),
-  devTools: process.env.NODE_ENV !== "production",
-});
+
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
-  <React.StrictMode>
-    <Provider store={store}>
-      <App />
-    </Provider>
-  </React.StrictMode>,
+  <AuthContext>
+    <BrowserRouter>
+      <React.StrictMode>
+        <App />
+      </React.StrictMode>
+    </BrowserRouter>
+  </AuthContext>,
 );

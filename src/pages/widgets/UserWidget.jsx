@@ -9,30 +9,34 @@ import { Box, Typography, useTheme, Divider } from "@mui/material";
 import UserImage from "../../components/UserImage";
 import FlexBetween from "../../components/FlexBetween";
 import WidgetWrapper from "../../components/WidgetWrapper";
-import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { BE_URL, getFullName } from "../../utils/constants";
+import { BE_URL } from "../../utils/constants";
+import { getFullName, getTokenFromCookie } from "../../utils/utils";
 import twitter from "../../assets/twitter.png";
 import linkedin from "../../assets/linkedin.png";
+import { useUserContext } from "../../components/authContext/AuthContext";
 
 const UserWidget = () => {
-  const [user, setUser] = useState(null);
+  const [profile, setProfile] = useState(null);
   const { palette } = useTheme();
   const navigate = useNavigate();
-  const userId = useSelector((state) => state.user._id);
-  const token = useSelector((state) => state.token);
+  const token = getTokenFromCookie();
+  const { user } = useUserContext();
+  const { _id } = user;
   const dark = palette.neutral.dark;
   const medium = palette.neutral.medium;
   const main = palette.neutral.main;
-
   const getUser = async () => {
     try {
-      const response = await fetch(BE_URL + `/users/${userId}`, {
+      const response = await fetch(BE_URL + `/users/${_id}`, {
         method: "GET",
         headers: { Authorization: `Bearer ${token}` },
       });
       const userData = await response.json();
-      setUser(userData);
+      if (!response.ok) {
+        throw new Error(userData.error);
+      }
+      setProfile(userData);
     } catch (error) {
       console.error(error.message);
     }
@@ -40,10 +44,9 @@ const UserWidget = () => {
   useEffect(() => {
     getUser();
   }, []);
-  console.log(user, token, "USER::::");
   return (
     <>
-      {user ? (
+      {profile ? (
         <WidgetWrapper>
           {/* FIRST ROW */}
           <FlexBetween
@@ -52,7 +55,7 @@ const UserWidget = () => {
             // onClick={navigate(`/profile/${user._id}`)}
           >
             <FlexBetween gap={"1rem"}>
-              <UserImage image={user.picturePath} />
+              <UserImage image={profile.picturePath} />
               <Box>
                 <Typography
                   variant="h4"
@@ -65,10 +68,10 @@ const UserWidget = () => {
                     },
                   }}
                 >
-                  {getFullName(user)}
+                  {getFullName(profile)}
                 </Typography>
                 <Typography color={medium}>
-                  {user.friends.length} friends
+                  {profile?.friends?.length} friends
                 </Typography>
               </Box>
             </FlexBetween>
@@ -84,7 +87,7 @@ const UserWidget = () => {
               mb={"0.5rem"}
             >
               <LocationOnOutlined fontSize="large" sx={{ color: main }} />
-              <Typography color={medium}>{user.location}</Typography>
+              <Typography color={medium}>{profile.location}</Typography>
             </Box>
             <Box
               display={"flex"}
@@ -93,7 +96,7 @@ const UserWidget = () => {
               mb={"0.5rem"}
             >
               <WorkOutlineOutlined fontSize="large" sx={{ color: main }} />
-              <Typography color={medium}>{user.occupation}</Typography>
+              <Typography color={medium}>{profile.occupation}</Typography>
             </Box>
           </Box>
           <Divider />
