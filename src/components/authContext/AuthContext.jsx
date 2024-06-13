@@ -5,13 +5,13 @@ const AuthContext = ({ children }) => {
   const [mode, setMode] = useState("light");
   const [isLogedIn, setIsLogedIn] = useState(false);
   const [user, setUser] = useState({});
-  const [allposts, setAllPosts] = useState({});
+  const [allPosts, setAllPosts] = useState([]);
   const allValues = {
     mode,
     setMode,
     user,
     setUser,
-    allposts,
+    allPosts,
     setAllPosts,
     isLogedIn,
     setIsLogedIn,

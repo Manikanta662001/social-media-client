@@ -3,7 +3,6 @@ import { Box } from "@mui/material";
 import { BE_URL } from "../utils/constants";
 
 const UserImage = ({ image, size = "60px" }) => {
-  console.log(image, "IMg");
   return (
     <Box width={size} height={size}>
       <img
