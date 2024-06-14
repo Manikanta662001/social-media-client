@@ -37,7 +37,6 @@ const MyPostWidget = ({ picturePath }) => {
   const isNonMobileScreen = useMediaQuery("(min-width:1000px)");
   const mediumMain = palette.neutral.mediumMain;
   const medium = palette.neutral.medium;
-  console.log("USER::", user);
   const handleCreatePost = async () => {
     try {
       const formData = new FormData();

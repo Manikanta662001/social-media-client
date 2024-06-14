@@ -84,7 +84,6 @@ const Form = () => {
         body: JSON.stringify(values),
       });
       const userData = await res.json();
-      console.log("RES::::", res, userData);
       if (!res.ok) {
         throw new Error(userData.error);
       }

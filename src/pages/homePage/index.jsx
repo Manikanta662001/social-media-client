@@ -11,7 +11,7 @@ import FriendListWidget from "../widgets/FriendListWidget";
 const HomePage = () => {
   const isNonMobileScreens = useMediaQuery("(min-width: 1000px)");
   const { user } = useUserContext();
-  const {_id, picturePath} = user;
+  const { _id, picturePath } = user;
 
   return (
     <Box>
@@ -35,7 +35,7 @@ const HomePage = () => {
         </Box>
         {isNonMobileScreens && (
           <Box flexBasis="26%">
-             <AdvertWidget />
+            <AdvertWidget />
             <Box m="2rem 0" />
             <FriendListWidget userId={_id} />
           </Box>

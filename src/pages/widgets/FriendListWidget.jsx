@@ -10,7 +10,6 @@ const FriendListWidget = () => {
   const { palette } = useTheme();
   const { user } = useUserContext();
   const [userFriends, setUserFriends] = useState([]);
-  console.log("::::::::::::", user.friends,userFriends);
   const getFriends = async () => {
     try {
       const response = await fetch(BE_URL + `/users/${user._id}/friends`, {

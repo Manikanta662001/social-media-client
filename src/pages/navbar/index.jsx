@@ -30,7 +30,6 @@ const Navbar = () => {
   const navigate = useNavigate();
   const { user, mode, setMode, setUser, setIsLogedIn } = useUserContext();
   const isNonMobileScreens = useMediaQuery("(min-width: 1000px)");
-  console.log(isNonMobileScreens, isMobileMenuToggled);
   const theme = useTheme();
   const neutralLight = theme.palette.neutral.light;
   const dark = theme.palette.neutral.dark;
