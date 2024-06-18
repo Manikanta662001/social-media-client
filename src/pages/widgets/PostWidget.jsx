@@ -32,6 +32,7 @@ const PostWidget = (props) => {
     userPicturePath,
     likes,
     comments,
+    sameUserOrNot,
   } = props;
 
   const [showComments, setShowComments] = useState(false);
@@ -78,10 +79,10 @@ const PostWidget = (props) => {
       if (!response.ok) {
         throw new Error(post.error);
       }
-      const {allPosts,message} = post;
+      const { allPosts, message } = post;
       setAllPosts(allPosts);
       notification(message, "");
-      setUserComment('');
+      setUserComment("");
     } catch (error) {
       notification("", error.message);
     }
@@ -93,6 +94,7 @@ const PostWidget = (props) => {
         name={name}
         subtitle={location}
         userPicturePath={userPicturePath}
+        sameUserOrNot={sameUserOrNot}
       />
       <Typography color={main} sx={{ mt: "1rem" }}>
         {description}
@@ -130,8 +132,8 @@ const PostWidget = (props) => {
         </IconButton>
       </FlexBetween>
       {showComments && (
-        <Box mt="0.5rem" height={'150px'} overflow={"auto"}>
-          <FlexBetween >
+        <Box mt="0.5rem" height={"150px"} overflow={"auto"}>
+          <FlexBetween>
             <InputBase
               placeholder="Enter Your Comment"
               value={userComment}

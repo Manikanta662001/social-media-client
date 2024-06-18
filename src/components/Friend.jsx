@@ -9,7 +9,7 @@ import { getTokenFromCookie, notification } from "../utils/utils";
 import { BE_URL } from "../utils/constants";
 
 const Friend = (props) => {
-  const { friendId, name, subtitle, userPicturePath } = props;
+  const { friendId, name, subtitle, userPicturePath, sameUserOrNot } = props;
   const navigate = useNavigate();
   const { palette } = useTheme();
   const { user, setUser } = useUserContext();
@@ -63,6 +63,7 @@ const Friend = (props) => {
         <IconButton
           sx={{ color: primaryLight, p: "0.6rem" }}
           onClick={handleAddOrRemoveFriend}
+          disabled={!sameUserOrNot}
         >
           {isFriendOrNot !== undefined ? (
             <PersonRemoveOutlined sx={{ color: primaryDark }} />
