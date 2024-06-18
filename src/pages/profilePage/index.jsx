@@ -16,7 +16,7 @@ const ProfilePage = () => {
   const { userId } = useParams();
   const { user } = useUserContext();
   const isNonMobileScreens = useMediaQuery("(min-width:1000px)");
-
+  const sameUserOrNot = user._id === userId;
   const getUser = async () => {
     try {
       const response = await fetch(BE_URL + `/users/${userId}`, {
@@ -57,9 +57,13 @@ const ProfilePage = () => {
           flexBasis={isNonMobileScreens ? "42%" : undefined}
           mt={isNonMobileScreens ? undefined : "2rem"}
         >
-          <MyPostWidget picturePath={profile?.picturePath} />
+          {sameUserOrNot && <MyPostWidget picturePath={profile?.picturePath} />}
           <Box m="2rem 0" />
-          <PostsWidget userId={userId} isProfile />
+          <PostsWidget
+            userId={userId}
+            isProfile
+            sameUserOrNot={sameUserOrNot}
+          />
         </Box>
       </Box>
     </Box>

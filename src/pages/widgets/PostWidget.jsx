@@ -1,7 +1,15 @@
 import React, { useState } from "react";
 import WidgetWrapper from "../../components/WidgetWrapper";
 import Friend from "../../components/Friend";
-import { Typography, IconButton, useTheme, Box, Divider } from "@mui/material";
+import {
+  Typography,
+  IconButton,
+  useTheme,
+  Box,
+  Divider,
+  InputBase,
+  Button,
+} from "@mui/material";
 import {
   FavoriteBorderOutlined,
   FavoriteOutlined,
@@ -11,7 +19,7 @@ import {
 import { BE_URL } from "../../utils/constants";
 import FlexBetween from "../../components/FlexBetween";
 import { useUserContext } from "../../components/authContext/AuthContext";
-import { getTokenFromCookie } from "../../utils/utils";
+import { getTokenFromCookie, notification } from "../../utils/utils";
 
 const PostWidget = (props) => {
   const {
@@ -24,9 +32,11 @@ const PostWidget = (props) => {
     userPicturePath,
     likes,
     comments,
+    sameUserOrNot,
   } = props;
 
   const [showComments, setShowComments] = useState(false);
+  const [userComment, setUserComment] = useState("");
   const { palette } = useTheme();
   const { user, allPosts, setAllPosts } = useUserContext();
   const main = palette.neutral.main;
@@ -55,6 +65,28 @@ const PostWidget = (props) => {
       console.error(error.message);
     }
   };
+  const handleAddComment = async (postId) => {
+    try {
+      const response = await fetch(BE_URL + `/posts/${postId}/comment`, {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${getTokenFromCookie()}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ userId: user._id, comment: userComment }),
+      });
+      const post = await response.json();
+      if (!response.ok) {
+        throw new Error(post.error);
+      }
+      const { allPosts, message } = post;
+      setAllPosts(allPosts);
+      notification(message, "");
+      setUserComment("");
+    } catch (error) {
+      notification("", error.message);
+    }
+  };
   return (
     <WidgetWrapper m={"2rem 0"}>
       <Friend
@@ -62,6 +94,7 @@ const PostWidget = (props) => {
         name={name}
         subtitle={location}
         userPicturePath={userPicturePath}
+        sameUserOrNot={sameUserOrNot}
       />
       <Typography color={main} sx={{ mt: "1rem" }}>
         {description}
@@ -99,9 +132,33 @@ const PostWidget = (props) => {
         </IconButton>
       </FlexBetween>
       {showComments && (
-        <Box mt="0.5rem">
+        <Box mt="0.5rem" height={"150px"} overflow={"auto"}>
+          <FlexBetween>
+            <InputBase
+              placeholder="Enter Your Comment"
+              value={userComment}
+              onChange={(e) => setUserComment(e.target.value)}
+              sx={{
+                width: "70%",
+                backgroundColor: palette.neutral.light,
+                borderRadius: "1rem",
+                padding: "3px 4px",
+              }}
+            />
+            <Button
+              onClick={() => handleAddComment(postId)}
+              disabled={!userComment.trim()}
+              sx={{
+                backgroundColor: palette.primary.main,
+                color: palette.background.alt,
+                borderRadius: "3rem",
+              }}
+            >
+              Comment
+            </Button>
+          </FlexBetween>
           {comments.map((comment, ind) => (
-            <Box key={`${name}-${comment}`}>
+            <Box key={`${name}-${comment}`} mt={"1rem"}>
               <Divider />
               <Typography sx={{ color: main, m: "0.5rem 0", pl: "1rem" }}>
                 {comment}

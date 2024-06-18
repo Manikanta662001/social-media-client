@@ -6,13 +6,13 @@ import Friend from "../../components/Friend";
 import { getFullName, getTokenFromCookie } from "../../utils/utils";
 import { BE_URL } from "../../utils/constants";
 
-const FriendListWidget = () => {
+const FriendListWidget = ({ userId }) => {
   const { palette } = useTheme();
   const { user } = useUserContext();
   const [userFriends, setUserFriends] = useState([]);
   const getFriends = async () => {
     try {
-      const response = await fetch(BE_URL + `/users/${user._id}/friends`, {
+      const response = await fetch(BE_URL + `/users/${userId}/friends`, {
         headers: { Authorization: `Bearer ${getTokenFromCookie()}` },
       });
       const result = await response.json();

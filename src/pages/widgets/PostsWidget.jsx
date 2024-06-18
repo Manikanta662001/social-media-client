@@ -4,7 +4,7 @@ import { getFullName, getTokenFromCookie } from "../../utils/utils";
 import { useUserContext } from "../../components/authContext/AuthContext";
 import PostWidget from "./PostWidget";
 
-const PostsWidget = ({ userId, isProfile = false }) => {
+const PostsWidget = ({ userId, isProfile = false, sameUserOrNot = true }) => {
   const { allPosts, setAllPosts } = useUserContext();
   const getPosts = async () => {
     try {
@@ -50,6 +50,7 @@ const PostsWidget = ({ userId, isProfile = false }) => {
           userPicturePath={post.userPicturePath}
           likes={post.likes}
           comments={post.comments}
+          sameUserOrNot={sameUserOrNot}
         />
       ))}
     </>
