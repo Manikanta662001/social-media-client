@@ -24,9 +24,11 @@ function App() {
       if (!response.ok) {
         throw new Error(userData.error);
       }
-      setUser(userData);
-      setIsLogedIn(true);
-      navigate("/home");
+      if (userData) {
+        setUser(userData);
+        setIsLogedIn(true);
+        navigate("/home");
+      }
     } catch (error) {
       console.error(error?.message);
     }

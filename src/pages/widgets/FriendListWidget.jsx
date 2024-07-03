@@ -35,14 +35,18 @@ const FriendListWidget = ({ userId }) => {
         Friends List
       </Typography>
       <Box display={"flex"} flexDirection={"column"} gap={"1.5rem"}>
-        {userFriends?.map((fri, ind) => (
-          <Friend
-            friendId={fri._id}
-            name={getFullName(fri)}
-            subtitle={fri.location}
-            userPicturePath={fri.picturePath}
-          />
-        ))}
+        {userFriends?.map((fri, ind) => {
+          const sameUserOrNot = fri._id !== user._id;
+          return (
+            <Friend
+              friendId={fri._id}
+              name={getFullName(fri)}
+              subtitle={fri.location}
+              userPicturePath={fri.picturePath}
+              sameUserOrNot={sameUserOrNot}
+            />
+          );
+        })}
       </Box>
     </WidgetWrapper>
   );

@@ -157,11 +157,12 @@ const PostWidget = (props) => {
               Comment
             </Button>
           </FlexBetween>
-          {comments.map((comment, ind) => (
-            <Box key={`${name}-${comment}`} mt={"1rem"}>
+          {comments.map((commentObj, ind) => (
+            <Box key={`${name}-${commentObj.comment}`} mt={"1rem"}>
               <Divider />
               <Typography sx={{ color: main, m: "0.5rem 0", pl: "1rem" }}>
-                {comment}
+                {commentObj.comment}
+                <strong> -by {commentObj.name}</strong>
               </Typography>
             </Box>
           ))}
