@@ -3,26 +3,19 @@ import WidgetWrapper from "../../components/WidgetWrapper";
 import { Box, Typography, useTheme } from "@mui/material";
 import { useUserContext } from "../../components/authContext/AuthContext";
 import Friend from "../../components/Friend";
-import { getFullName, getTokenFromCookie } from "../../utils/utils";
-import { BE_URL } from "../../utils/constants";
+import { getFullName, getUserFriends } from "../../utils/utils";
 
 const FriendListWidget = ({ userId }) => {
   const { palette } = useTheme();
   const { user } = useUserContext();
   const [userFriends, setUserFriends] = useState([]);
-  const getFriends = async () => {
-    try {
-      const response = await fetch(BE_URL + `/users/${userId}/friends`, {
-        headers: { Authorization: `Bearer ${getTokenFromCookie()}` },
-      });
-      const result = await response.json();
-      setUserFriends(result);
-    } catch (error) {
-      console.error(error.message);
-    }
-  };
+
   useEffect(() => {
-    getFriends();
+    const friendsFn = async () => {
+      const result = await getUserFriends(userId);
+      setUserFriends(result);
+    };
+    friendsFn();
   }, [user]);
   return (
     <WidgetWrapper>
@@ -39,6 +32,7 @@ const FriendListWidget = ({ userId }) => {
           const sameUserOrNot = fri._id !== user._id;
           return (
             <Friend
+              key={fri._id + fri.firstName}
               friendId={fri._id}
               name={getFullName(fri)}
               subtitle={fri.location}

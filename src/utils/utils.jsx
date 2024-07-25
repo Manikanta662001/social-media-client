@@ -1,4 +1,5 @@
 import { toast } from "react-toastify";
+import { BE_URL } from "./constants";
 
 export const getFullName = (user) => {
   if (user) {
@@ -50,5 +51,17 @@ export const getTokenFromCookie = () => {
     }
   } else {
     return "";
+  }
+};
+
+export const getUserFriends = async (userId) => {
+  try {
+    const response = await fetch(BE_URL + `/users/${userId}/friends`, {
+      headers: { Authorization: `Bearer ${getTokenFromCookie()}` },
+    });
+    const result = await response.json();
+    return result;
+  } catch (error) {
+    console.error(error.message);
   }
 };
