@@ -13,7 +13,7 @@ import {
   useTheme,
 } from "@mui/material";
 import UserImage from "../../components/UserImage";
-import { generateRoomId, getFullName } from "../../utils/utils";
+import { formatTime, generateRoomId, getFullName } from "../../utils/utils";
 import { useUserContext } from "../../components/authContext/AuthContext";
 
 const ChatWindow = ({ selectedChatUser }) => {
@@ -31,26 +31,31 @@ const ChatWindow = ({ selectedChatUser }) => {
     e.preventDefault();
     const roomId = generateRoomId(user, selectedChatUser);
     console.log("ROOMID:::", roomId);
+    const date = new Date().toISOString();
     socket.emit("message", {
       roomId,
       content: messageText,
       from: user,
       to: selectedChatUser,
-      date: new Date(),
+      date,
     });
     setAllMessages([
       ...allMessages,
       {
         to: { id: selectedChatUser._id, name: getFullName(selectedChatUser) },
+        from: { id: user._id, name: getFullName(user) },
         content: messageText,
+        time: formatTime(date),
+        date,
       },
     ]);
     setMessageText("");
   };
-  socket.off("message").on("message", ({ to, content }) => {
+  socket.off("message").on("message", (singleMessage) => {
+    const { to } = singleMessage;
     if (user._id === to.id) {
-      console.log("ON:::", { to, content });
-      setAllMessages([...allMessages, { to, content }]);
+      console.log("ON:::", singleMessage);
+      setAllMessages([...allMessages, singleMessage]);
     }
   });
 
@@ -63,11 +68,11 @@ const ChatWindow = ({ selectedChatUser }) => {
   }, [selectedChatUser]);
 
   socket.off("getallmsgs").on("getallmsgs", ({ messages }) => {
-  console.log("ALLLL1;;;;",messages)
+    console.log("ALLLL1;;;;", messages);
 
     setAllMessages(messages);
   });
-  console.log("ALLLL;;;;",allMessages)
+  console.log("ALLLL;;;;", allMessages);
 
   return (
     <div>
