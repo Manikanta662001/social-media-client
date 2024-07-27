@@ -65,3 +65,13 @@ export const getUserFriends = async (userId) => {
     console.error(error.message);
   }
 };
+
+export const generateRoomId = (user, selectedChatUser) => {
+  let roomId;
+  if (user._id > selectedChatUser._id) {
+    roomId = user._id + selectedChatUser._id;
+  } else {
+    roomId = selectedChatUser._id + user._id;
+  }
+  return roomId;
+};

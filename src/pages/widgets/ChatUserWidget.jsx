@@ -2,8 +2,9 @@ import React from "react";
 import FlexBetween from "../../components/FlexBetween";
 import UserImage from "../../components/UserImage";
 import { Box, Typography, useTheme } from "@mui/material";
+import { getFullName } from "../../utils/utils";
 
-const ChatUserWidget = ({ eachFriend }) => {
+const ChatUserWidget = ({ eachFriend, setSelectedChatUser }) => {
   const { _id, firstName, lastName, picturePath } = eachFriend;
   const { palette } = useTheme();
   const main = palette.neutral.main;
@@ -16,13 +17,14 @@ const ChatUserWidget = ({ eachFriend }) => {
       }}
       padding={"10px"}
       borderBottom={`1px solid ${neutralLight}`}
+      onClick={() => setSelectedChatUser(eachFriend)}
     >
       <FlexBetween width={"100%"}>
         <FlexBetween gap={"1.5rem"}>
           <UserImage image={picturePath} size={"40px"} />
           <Box onClick={() => console.log("first")}>
             <Typography color={main} variant="h5" fontWeight={"500"}>
-              {firstName}
+              {getFullName(eachFriend)}
             </Typography>
             <Typography color={medium} fontSize={"0.75rem"}>
               hello

@@ -7,7 +7,7 @@ import FlexBetween from "../../components/FlexBetween";
 import { Search } from "@mui/icons-material";
 import CircularProgress from "@mui/material/CircularProgress";
 
-const ChatSideBar = () => {
+const ChatSideBar = ({ setSelectedChatUser }) => {
   const { user } = useUserContext();
   const { _id } = user;
   const [loading, setLoading] = useState(true);
@@ -51,7 +51,12 @@ const ChatSideBar = () => {
 
           <Box display={"flex"} flexDirection={"column"}>
             {allChatFriends?.map((eachFriend, ind) => {
-              return <ChatUserWidget eachFriend={eachFriend} />;
+              return (
+                <ChatUserWidget
+                  eachFriend={eachFriend}
+                  setSelectedChatUser={setSelectedChatUser}
+                />
+              );
             })}
           </Box>
         </>
