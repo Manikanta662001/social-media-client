@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import FlexBetween from "../../components/FlexBetween";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
 import SendIcon from "@mui/icons-material/Send";
@@ -21,6 +21,7 @@ const ChatWindow = ({ selectedChatUser }) => {
   const isNonMobileScreens = useMediaQuery("(min-width: 1000px)");
   const [messageText, setMessageText] = useState("");
   const [allMessages, setAllMessages] = useState([]);
+  const chatBodyRef = useRef(null);
   const theme = useTheme();
   const { user, socket } = useUserContext();
   const neutralLight = theme.palette.neutral.light;
@@ -73,6 +74,15 @@ const ChatWindow = ({ selectedChatUser }) => {
 
     setAllMessages(messages);
   });
+
+  useEffect(() => {
+    if (chatBodyRef.current) {
+      chatBodyRef.current.scrollTo({
+        top: chatBodyRef.current.scrollHeight,
+        behavior: "smooth",
+      });
+    }
+  }, [allMessages]);
   console.log("ALLLL;;;;", allMessages);
 
   return (
@@ -105,7 +115,7 @@ const ChatWindow = ({ selectedChatUser }) => {
               </Box>
             </FlexBetween>
           </Box>
-          <Box className="chat-body">
+          <Box className="chat-body" ref={chatBodyRef}>
             {allMessages &&
               allMessages?.map((singleMessage, index) => {
                 return (
