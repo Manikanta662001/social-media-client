@@ -15,6 +15,7 @@ import {
 import UserImage from "../../components/UserImage";
 import { formatTime, generateRoomId, getFullName } from "../../utils/utils";
 import { useUserContext } from "../../components/authContext/AuthContext";
+import "./ChatWindow.css";
 
 const ChatWindow = ({ selectedChatUser }) => {
   const isNonMobileScreens = useMediaQuery("(min-width: 1000px)");
@@ -104,10 +105,28 @@ const ChatWindow = ({ selectedChatUser }) => {
               </Box>
             </FlexBetween>
           </Box>
+          <Box className="chat-body">
+            {allMessages &&
+              allMessages?.map((singleMessage, index) => {
+                return (
+                  <Box
+                    className={
+                      user._id === singleMessage?.from?.id && "user-message"
+                    }
+                  >
+                    <Typography component={"p"}>
+                      {singleMessage.content}
+                      <span>{singleMessage.time}</span>
+                    </Typography>
+                  </Box>
+                );
+              })}
+          </Box>
           <Box
             position={"fixed"}
             bottom={"1px"}
-            width={isNonMobileScreens ? "76%" : "100%"}
+            right={"0"}
+            width={isNonMobileScreens ? "calc(100% - 252px)" : "100%"}
             sx={{ background: neutralLight }}
           >
             <Box

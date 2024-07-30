@@ -19,7 +19,6 @@ const ChatPage = () => {
       <Box
         flexBasis={isNonMobileScreens ? "76%" : undefined}
         sx={{ background: "#c9c9c1" }}
-        height={"100vh"}
       >
         <ChatWindow selectedChatUser={selectedChatUser} />
       </Box>
