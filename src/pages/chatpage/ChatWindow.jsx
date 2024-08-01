@@ -4,10 +4,13 @@ import AttachFileIcon from "@mui/icons-material/AttachFile";
 import SendIcon from "@mui/icons-material/Send";
 import InsertEmoticonIcon from "@mui/icons-material/InsertEmoticon";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
+import KeyboardDoubleArrowDownIcon from "@mui/icons-material/KeyboardDoubleArrowDown";
 import {
   Box,
   IconButton,
   InputBase,
+  Menu,
+  MenuItem,
   Typography,
   useMediaQuery,
   useTheme,
@@ -16,12 +19,19 @@ import UserImage from "../../components/UserImage";
 import { formatTime, generateRoomId, getFullName } from "../../utils/utils";
 import { useUserContext } from "../../components/authContext/AuthContext";
 import "./ChatWindow.css";
+import { BE_URL } from "../../utils/constants";
+import ChatImage from "../../components/ChatImage";
 
 const ChatWindow = ({ selectedChatUser }) => {
   const isNonMobileScreens = useMediaQuery("(min-width: 1000px)");
   const [messageText, setMessageText] = useState("");
   const [allMessages, setAllMessages] = useState([]);
+  const [roomId, setRoomId] = useState("");
+  const [showArrowIcon, setShowArrowIcon] = useState(false);
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const open = Boolean(anchorEl);
   const chatBodyRef = useRef(null);
+  const fileInputref = useRef(null);
   const theme = useTheme();
   const { user, socket } = useUserContext();
   const neutralLight = theme.palette.neutral.light;
@@ -29,30 +39,72 @@ const ChatWindow = ({ selectedChatUser }) => {
   const medium = theme.palette.neutral.medium;
   const main = theme.palette.neutral.main;
 
-  const handleSendMessage = (e) => {
+  const handleSendMessage = (
+    e,
+    messageType = "message",
+    fileLink = "",
+    text
+  ) => {
     e.preventDefault();
-    const roomId = generateRoomId(user, selectedChatUser);
-    console.log("ROOMID:::", roomId);
+    console.log("TEXT:::", text, messageText);
     const date = new Date().toISOString();
-    socket.emit("message", {
-      roomId,
-      content: messageText,
-      from: user,
-      to: selectedChatUser,
+    const sendingMsg = {
+      from: { id: user._id, name: getFullName(user) },
+      to: { id: selectedChatUser._id, name: getFullName(selectedChatUser) },
+      content: messageText || text,
       date,
-    });
-    setAllMessages([
-      ...allMessages,
-      {
-        to: { id: selectedChatUser._id, name: getFullName(selectedChatUser) },
-        from: { id: user._id, name: getFullName(user) },
-        content: messageText,
-        time: formatTime(date),
-        date,
-      },
-    ]);
+      time: formatTime(date),
+      type: messageType,
+      fileLink,
+    };
+    socket.emit("message", { ...sendingMsg, roomId });
+    setAllMessages([...allMessages, sendingMsg]);
     setMessageText("");
   };
+
+  const handleScroll = () => {
+    const { scrollTop, scrollHeight, clientHeight } = chatBodyRef.current;
+    console.log("SCROLL::::", {
+      scrollTop,
+      scrollHeight,
+      clientHeight,
+    });
+    if (scrollTop + clientHeight <= scrollHeight - 100) {
+      setShowArrowIcon(true);
+    } else {
+      setShowArrowIcon(false);
+    }
+  };
+
+  const handleMenuOpen = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+  const handleImageClick = () => {
+    fileInputref.current.click();
+  };
+  const handleFileSelect = async (e) => {
+    handleMenuClose();
+    console.log("FILE:::::", e.target.files[0]);
+    const selectedFile = e.target.files[0];
+    if (selectedFile) {
+      try {
+        const formData = new FormData();
+        formData.append("picture", selectedFile);
+        const response = await fetch(BE_URL + "/file", {
+          method: "POST",
+          body: formData,
+        });
+        const result = await response.json();
+        console.log("API::::", result);
+        handleSendMessage(e, "image", result._id, selectedFile.name);
+      } catch (error) {}
+    }
+  };
+
   socket.off("message").on("message", (singleMessage) => {
     const { to } = singleMessage;
     if (user._id === to.id) {
@@ -63,19 +115,26 @@ const ChatWindow = ({ selectedChatUser }) => {
 
   useEffect(() => {
     if (selectedChatUser) {
+      const generatedRoomId = generateRoomId(user, selectedChatUser);
+      setRoomId(generatedRoomId);
       socket.emit("allmsgs", {
+        roomId: generatedRoomId,
+      });
+      if (roomId) {
+        socket.emit("leaveRoom", { roomId });
+      }
+      socket.emit("joinRoom", {
         roomId: generateRoomId(user, selectedChatUser),
       });
     }
   }, [selectedChatUser]);
 
   socket.off("getallmsgs").on("getallmsgs", ({ messages }) => {
-    console.log("ALLLL1;;;;", messages);
-
     setAllMessages(messages);
   });
 
   useEffect(() => {
+    console.log("EFF:::");
     if (chatBodyRef.current) {
       chatBodyRef.current.scrollTo({
         top: chatBodyRef.current.scrollHeight,
@@ -83,8 +142,15 @@ const ChatWindow = ({ selectedChatUser }) => {
       });
     }
   }, [allMessages]);
-  console.log("ALLLL;;;;", allMessages);
 
+  useEffect(() => {
+    chatBodyRef.current?.addEventListener("scroll", handleScroll);
+    return () => {
+      chatBodyRef.current?.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
+  console.log("ALL:::", allMessages, messageText);
   return (
     <div>
       {selectedChatUser ? (
@@ -116,27 +182,42 @@ const ChatWindow = ({ selectedChatUser }) => {
             </FlexBetween>
           </Box>
           <Box className="chat-body" ref={chatBodyRef}>
+            {showArrowIcon && (
+              <IconButton className="down-arrow">
+                <KeyboardDoubleArrowDownIcon />
+              </IconButton>
+            )}
             {allMessages &&
               allMessages?.map((singleMessage, index) => {
-                return (
-                  <Box
-                    className={
-                      user._id === singleMessage?.from?.id && "user-message"
-                    }
-                  >
-                    <Typography component={"p"}>
-                      {singleMessage.content}
-                      <span>{singleMessage.time}</span>
-                    </Typography>
-                  </Box>
-                );
+                if (singleMessage.type === "message") {
+                  return (
+                    <Box
+                      className={
+                        user._id === singleMessage?.from?.id && "user-message"
+                      }
+                    >
+                      <Typography component={"p"}>
+                        {singleMessage.content}
+                        <span>{singleMessage.time}</span>
+                      </Typography>
+                    </Box>
+                  );
+                } else if (singleMessage.type === "image") {
+                  return (
+                    <ChatImage
+                      currentUser={user}
+                      singleMessage={singleMessage}
+                    />
+                  );
+                }
               })}
+            <div></div>
           </Box>
           <Box
             position={"fixed"}
             bottom={"1px"}
             right={"0"}
-            width={isNonMobileScreens ? "calc(100% - 252px)" : "100%"}
+            width={isNonMobileScreens ? "calc(100% - 333px)" : "100%"}
             sx={{ background: neutralLight }}
           >
             <Box
@@ -146,7 +227,7 @@ const ChatWindow = ({ selectedChatUser }) => {
               gap="0.5rem"
               justifyContent="space-between"
             >
-              <IconButton>
+              <IconButton onClick={handleMenuOpen}>
                 <AttachFileIcon sx={{ color: dark }} />
               </IconButton>
               <Box flexBasis={"90%"} m={"4px 0px"}>
@@ -176,6 +257,29 @@ const ChatWindow = ({ selectedChatUser }) => {
               </IconButton>
             </Box>
           </Box>
+          <Menu
+            anchorEl={anchorEl}
+            open={open}
+            onClose={handleMenuClose}
+            anchorOrigin={{
+              vertical: "top",
+              horizontal: "right",
+            }}
+            transformOrigin={{
+              vertical: "bottom",
+              horizontal: "center",
+            }}
+          >
+            <MenuItem onClick={handleImageClick}>
+              <input
+                type="file"
+                style={{ display: "none" }}
+                ref={fileInputref}
+                onChange={handleFileSelect}
+              />
+              Image
+            </MenuItem>
+          </Menu>
         </>
       ) : (
         <h1>Welcome to Chat 💬 Page</h1>

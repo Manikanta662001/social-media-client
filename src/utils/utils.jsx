@@ -89,3 +89,18 @@ export function formatTime(date) {
   const strTime = hours + ":" + minutes + " " + ampm;
   return strTime;
 }
+
+export const getImageFromDb = async (id) => {
+  const response = await fetch(BE_URL + "/file/" + id, {
+    method: "GET",
+  });
+  const result = await response.json();
+  if (result) {
+    const base64 = await new Uint8Array(result.data.data);
+    const url = await URL.createObjectURL(
+      new Blob([base64], { type: result.data.type }),
+    );
+    console.log("GETFILE::::", result, url);
+    return url;
+  }
+};

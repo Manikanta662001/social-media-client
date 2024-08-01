@@ -17,6 +17,10 @@
   bottom: 0px;
   font-size: 12px;
 }
+.chat-body > div p img {
+  width: 100%;
+  height: 100%;
+}
 
 .chat-body > div.user-message {
   display: flex;
