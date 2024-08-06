@@ -29,7 +29,7 @@ const ChatSideBar = ({ setSelectedChatUser }) => {
     };
     friendsFn();
   }, []);
-  console.log("CHAT:::", loading, allChatFriends);
+
   return (
     <>
       {loading ? (

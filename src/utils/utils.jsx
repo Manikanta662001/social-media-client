@@ -100,7 +100,6 @@ export const getImageFromDb = async (id) => {
     const url = await URL.createObjectURL(
       new Blob([base64], { type: result.data.type }),
     );
-    console.log("GETFILE::::", result, url);
     return url;
   }
 };

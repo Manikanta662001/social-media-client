@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from "react";
 import FlexBetween from "../../components/FlexBetween";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
 import SendIcon from "@mui/icons-material/Send";
-import InsertEmoticonIcon from "@mui/icons-material/InsertEmoticon";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import KeyboardDoubleArrowDownIcon from "@mui/icons-material/KeyboardDoubleArrowDown";
 import {
@@ -21,6 +20,7 @@ import { useUserContext } from "../../components/authContext/AuthContext";
 import "./ChatWindow.css";
 import { BE_URL } from "../../utils/constants";
 import ChatImage from "../../components/ChatImage";
+import EmojiPickerButton from "../../components/EmojiPickerButton";
 
 const ChatWindow = ({ selectedChatUser }) => {
   const isNonMobileScreens = useMediaQuery("(min-width: 1000px)");
@@ -38,6 +38,7 @@ const ChatWindow = ({ selectedChatUser }) => {
   const dark = theme.palette.neutral.dark;
   const medium = theme.palette.neutral.medium;
   const main = theme.palette.neutral.main;
+  const chatHeight = chatBodyRef?.current?.scrollHeight
 
   const handleSendMessage = (
     e,
@@ -46,7 +47,6 @@ const ChatWindow = ({ selectedChatUser }) => {
     text
   ) => {
     e.preventDefault();
-    console.log("TEXT:::", text, messageText);
     const date = new Date().toISOString();
     const sendingMsg = {
       from: { id: user._id, name: getFullName(user) },
@@ -88,7 +88,6 @@ const ChatWindow = ({ selectedChatUser }) => {
   };
   const handleFileSelect = async (e) => {
     handleMenuClose();
-    console.log("FILE:::::", e.target.files[0]);
     const selectedFile = e.target.files[0];
     if (selectedFile) {
       try {
@@ -99,7 +98,6 @@ const ChatWindow = ({ selectedChatUser }) => {
           body: formData,
         });
         const result = await response.json();
-        console.log("API::::", result);
         handleSendMessage(e, "image", result._id, selectedFile.name);
       } catch (error) {}
     }
@@ -108,7 +106,6 @@ const ChatWindow = ({ selectedChatUser }) => {
   socket.off("message").on("message", (singleMessage) => {
     const { to } = singleMessage;
     if (user._id === to.id) {
-      console.log("ON:::", singleMessage);
       setAllMessages([...allMessages, singleMessage]);
     }
   });
@@ -126,6 +123,11 @@ const ChatWindow = ({ selectedChatUser }) => {
       socket.emit("joinRoom", {
         roomId: generateRoomId(user, selectedChatUser),
       });
+      //ADDING SCROLL EVENT TO CHAT BODY WHEN USER SELECTS A CHAT USER
+      chatBodyRef.current?.addEventListener("scroll", handleScroll);
+      return () => {
+        chatBodyRef.current?.removeEventListener("scroll", handleScroll);
+      };
     }
   }, [selectedChatUser]);
 
@@ -134,23 +136,15 @@ const ChatWindow = ({ selectedChatUser }) => {
   });
 
   useEffect(() => {
-    console.log("EFF:::");
     if (chatBodyRef.current) {
-      chatBodyRef.current.scrollTo({
-        top: chatBodyRef.current.scrollHeight,
+      const chatBodyElement = chatBodyRef.current;
+      chatBodyElement.scrollTo({
+        top: chatBodyElement.scrollHeight,
         behavior: "smooth",
       });
     }
   }, [allMessages]);
 
-  useEffect(() => {
-    chatBodyRef.current?.addEventListener("scroll", handleScroll);
-    return () => {
-      chatBodyRef.current?.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
-
-  console.log("ALL:::", allMessages, messageText);
   return (
     <div>
       {selectedChatUser ? (
@@ -240,9 +234,7 @@ const ChatWindow = ({ selectedChatUser }) => {
                     borderRadius: "1rem",
                   }}
                 >
-                  <IconButton>
-                    <InsertEmoticonIcon />
-                  </IconButton>
+                  <EmojiPickerButton/>
                   <InputBase
                     placeholder="Search..."
                     fullWidth
