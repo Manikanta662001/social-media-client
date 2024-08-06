@@ -22,7 +22,7 @@ import { BE_URL } from "../../utils/constants";
 import ChatImage from "../../components/ChatImage";
 import EmojiPickerButton from "../../components/EmojiPickerButton";
 
-const ChatWindow = ({ selectedChatUser }) => {
+const ChatWindow = ({ selectedChatUser,chatFriends,setChatFriends }) => {
   const isNonMobileScreens = useMediaQuery("(min-width: 1000px)");
   const [messageText, setMessageText] = useState("");
   const [allMessages, setAllMessages] = useState([]);
@@ -59,7 +59,15 @@ const ChatWindow = ({ selectedChatUser }) => {
     };
     socket.emit("message", { ...sendingMsg, roomId });
     setAllMessages([...allMessages, sendingMsg]);
-    setMessageText("");
+    //we are moving the selectedChatUser to top 
+    const selectedUserIndex = chatFriends.findIndex((user)=>user._id===selectedChatUser._id);
+    if (selectedUserIndex!==0){
+      const clonedObj = [...chatFriends];
+      clonedObj.splice(selectedUserIndex,1);
+      clonedObj.unshift(selectedChatUser);
+      setChatFriends(clonedObj);
+      setMessageText("");
+    }
   };
 
   const handleScroll = () => {
