@@ -1,4 +1,6 @@
 import React, { createContext, useContext, useState } from "react";
+import io from "socket.io-client";
+const socket = io("http://localhost:5000");
 
 const UserContext = createContext();
 const AuthContext = ({ children }) => {
@@ -15,6 +17,7 @@ const AuthContext = ({ children }) => {
     setAllPosts,
     isLogedIn,
     setIsLogedIn,
+    socket,
   };
   return (
     <div>
