@@ -18,8 +18,8 @@
   font-size: 12px;
 }
 .chat-body > div p img {
-  width: 100%;
-  height: 100%;
+  width: 300px;
+  height: 200px;
 }
 
 .chat-body > div.user-message {
@@ -39,4 +39,10 @@
 }
 .chat-body::-webkit-scrollbar {
   width: 0;
+}
+.loading-indicator {
+  text-align: center;
+  width: 100% !important;
+  position: relative;
+  top: 50%;
 }

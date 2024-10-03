@@ -1,6 +1,10 @@
 import React, { createContext, useContext, useState } from "react";
 import io from "socket.io-client";
+import { BE_URL } from "../../utils/constants";
+//for local
 const socket = io("http://localhost:5000");
+//for live
+// const socket = io(BE_URL);
 
 const UserContext = createContext();
 const AuthContext = ({ children }) => {
