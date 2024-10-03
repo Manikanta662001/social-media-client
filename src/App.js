@@ -9,7 +9,7 @@ import { themeSettings } from "./theme";
 import { useUserContext } from "./components/authContext/AuthContext";
 import { getTokenFromCookie } from "./utils/utils";
 import { BE_URL } from "./utils/constants";
-import ChatPage from "./pages/chatpage";
+import ChatPage from "./pages/chatpage/index";
 
 function App() {
   const { mode, isLogedIn, setUser, setIsLogedIn } = useUserContext();

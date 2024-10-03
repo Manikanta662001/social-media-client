@@ -47,14 +47,16 @@ const ChatSideBar = (props) => {
 
   useEffect(() => {
     const users = allChatFriends.filter((user) =>
-      getFullName(user).toLowerCase().includes(searchedUser.toLowerCase())
+      getFullName(user).toLowerCase().includes(searchedUser.toLowerCase()),
     );
     setChatFriends(users);
   }, [searchedUser]);
   return (
     <>
       {loading ? (
-        <CircularProgress color="success" />
+        <Box textAlign={"center"} position={"relative"} top={"50%"}>
+          <CircularProgress color="success" />
+        </Box>
       ) : (
         <>
           <FlexBetween borderBottom={"1px solid lightgrey"}>

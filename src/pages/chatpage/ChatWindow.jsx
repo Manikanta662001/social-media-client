@@ -22,7 +22,7 @@ import { BE_URL } from "../../utils/constants";
 import ChatImage from "../../components/ChatImage";
 import EmojiPickerButton from "../../components/EmojiPickerButton";
 
-const ChatWindow = ({ selectedChatUser,chatFriends,setChatFriends }) => {
+const ChatWindow = ({ selectedChatUser, chatFriends, setChatFriends }) => {
   const isNonMobileScreens = useMediaQuery("(min-width: 1000px)");
   const [messageText, setMessageText] = useState("");
   const [allMessages, setAllMessages] = useState([]);
@@ -38,7 +38,7 @@ const ChatWindow = ({ selectedChatUser,chatFriends,setChatFriends }) => {
   const dark = theme.palette.neutral.dark;
   const medium = theme.palette.neutral.medium;
   const main = theme.palette.neutral.main;
-  const chatHeight = chatBodyRef?.current?.scrollHeight
+  const chatHeight = chatBodyRef?.current?.scrollHeight;
 
   const handleSendMessage = (
     e,
@@ -59,11 +59,13 @@ const ChatWindow = ({ selectedChatUser,chatFriends,setChatFriends }) => {
     };
     socket.emit("message", { ...sendingMsg, roomId });
     setAllMessages([...allMessages, sendingMsg]);
-    //we are moving the selectedChatUser to top 
-    const selectedUserIndex = chatFriends.findIndex((user)=>user._id===selectedChatUser._id);
-    if (selectedUserIndex!==0){
+    //we are moving the selectedChatUser to top
+    const selectedUserIndex = chatFriends.findIndex(
+      (user) => user._id === selectedChatUser._id
+    );
+    if (selectedUserIndex !== 0) {
       const clonedObj = [...chatFriends];
-      clonedObj.splice(selectedUserIndex,1);
+      clonedObj.splice(selectedUserIndex, 1);
       clonedObj.unshift(selectedChatUser);
       setChatFriends(clonedObj);
       setMessageText("");
@@ -146,10 +148,12 @@ const ChatWindow = ({ selectedChatUser,chatFriends,setChatFriends }) => {
   useEffect(() => {
     if (chatBodyRef.current) {
       const chatBodyElement = chatBodyRef.current;
-      chatBodyElement.scrollTo({
-        top: chatBodyElement.scrollHeight,
-        behavior: "smooth",
-      });
+      setTimeout(() => {
+        chatBodyElement.scrollTo({
+          top: chatBodyElement.scrollHeight,
+          behavior: "smooth",
+        });
+      }, 1000);
     }
   }, [allMessages]);
 
@@ -219,7 +223,7 @@ const ChatWindow = ({ selectedChatUser,chatFriends,setChatFriends }) => {
             position={"fixed"}
             bottom={"1px"}
             right={"0"}
-            width={isNonMobileScreens ? "calc(100% - 333px)" : "100%"}
+            width={isNonMobileScreens ? "calc(100% - 24.5%)" : "100%"}
             sx={{ background: neutralLight }}
           >
             <Box
@@ -242,7 +246,7 @@ const ChatWindow = ({ selectedChatUser,chatFriends,setChatFriends }) => {
                     borderRadius: "1rem",
                   }}
                 >
-                  <EmojiPickerButton/>
+                  <EmojiPickerButton />
                   <InputBase
                     placeholder="Search..."
                     fullWidth
@@ -282,7 +286,9 @@ const ChatWindow = ({ selectedChatUser,chatFriends,setChatFriends }) => {
           </Menu>
         </>
       ) : (
-        <h1>Welcome to Chat 💬 Page</h1>
+        <Typography variant="h1" textAlign={"center"}>
+          Welcome to Chat 💬 Page
+        </Typography>
       )}
     </div>
   );
