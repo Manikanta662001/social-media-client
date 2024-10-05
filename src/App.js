@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import { Navigate, Routes, Route, useNavigate } from "react-router-dom";
 import LoginPage from "./pages/loginPage/index";
 import HomePage from "./pages/homePage/index";
@@ -7,7 +7,7 @@ import { CssBaseline, ThemeProvider } from "@mui/material";
 import { createTheme } from "@mui/material/styles";
 import { themeSettings } from "./theme";
 import { useUserContext } from "./components/authContext/AuthContext";
-import { getTokenFromCookie } from "./utils/utils";
+import { getTokenFromCookie, notification } from "./utils/utils";
 import { BE_URL } from "./utils/constants";
 import ChatPage from "./pages/chatpage/index";
 
@@ -15,6 +15,7 @@ function App() {
   const { mode, isLogedIn, setUser, setIsLogedIn } = useUserContext();
   const theme = useMemo(() => createTheme(themeSettings(mode)), [mode]);
   const navigate = useNavigate();
+  const hasFetched = useRef(false);
   const getUser = async () => {
     try {
       const response = await fetch(BE_URL + `/getUser`, {
@@ -31,11 +32,14 @@ function App() {
         navigate("/home");
       }
     } catch (error) {
-      console.error(error?.message);
+      notification('',error.message);
     }
   };
   useEffect(() => {
-    getUser();
+    if (!hasFetched.current){
+      getUser();
+      hasFetched.current = true;
+    }
   }, []);
   return (
     <div className="app">

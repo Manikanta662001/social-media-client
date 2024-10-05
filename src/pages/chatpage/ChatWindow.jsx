@@ -47,28 +47,33 @@ const ChatWindow = ({ selectedChatUser, chatFriends, setChatFriends }) => {
     text
   ) => {
     e.preventDefault();
-    const date = new Date().toISOString();
-    const sendingMsg = {
-      from: { id: user._id, name: getFullName(user) },
-      to: { id: selectedChatUser._id, name: getFullName(selectedChatUser) },
-      content: messageText || text,
-      date,
-      time: formatTime(date),
-      type: messageType,
-      fileLink,
-    };
-    socket.emit("message", { ...sendingMsg, roomId });
-    setAllMessages([...allMessages, sendingMsg]);
-    //we are moving the selectedChatUser to top
-    const selectedUserIndex = chatFriends.findIndex(
-      (user) => user._id === selectedChatUser._id
-    );
-    if (selectedUserIndex !== 0) {
-      const clonedObj = [...chatFriends];
-      clonedObj.splice(selectedUserIndex, 1);
-      clonedObj.unshift(selectedChatUser);
-      setChatFriends(clonedObj);
-      setMessageText("");
+    if (
+      (messageType === "message" && messageText.trim() !== "") ||
+      messageType === "image"
+    ) {
+      const date = new Date().toISOString();
+      const sendingMsg = {
+        from: { id: user._id, name: getFullName(user) },
+        to: { id: selectedChatUser._id, name: getFullName(selectedChatUser) },
+        content: messageText || text,
+        date,
+        time: formatTime(date),
+        type: messageType,
+        fileLink,
+      };
+      socket.emit("message", { ...sendingMsg, roomId });
+      setAllMessages([...allMessages, sendingMsg]);
+      //we are moving the selectedChatUser to top
+      const selectedUserIndex = chatFriends.findIndex(
+        (user) => user._id === selectedChatUser._id
+      );
+      if (selectedUserIndex !== 0) {
+        const clonedObj = [...chatFriends];
+        clonedObj.splice(selectedUserIndex, 1);
+        clonedObj.unshift(selectedChatUser);
+        setChatFriends(clonedObj);
+        setMessageText("");
+      }
     }
   };
 

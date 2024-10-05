@@ -38,19 +38,24 @@ export const setCookie = (token, hours) => {
 };
 
 export const getTokenFromCookie = () => {
-  let allCookies = document.cookie.split();
-  if (allCookies) {
-    let loginCookie = allCookies.filter((cookie) =>
-      cookie.includes("logincookie"),
-    );
-    if (loginCookie) {
-      loginCookie = loginCookie[0].split("=");
-      return loginCookie[1];
+  if (document?.cookie) {
+    let allCookies = document?.cookie?.split();
+    if (allCookies) {
+      let loginCookie = allCookies.filter((cookie) =>
+        cookie.includes("logincookie")
+      );
+      if (loginCookie) {
+        loginCookie = loginCookie[0].split("=");
+        return loginCookie[1];
+      } else {
+        return "";
+      }
     } else {
       return "";
     }
-  } else {
-    return "";
+  }
+  else {
+    return ''
   }
 };
 
@@ -98,7 +103,7 @@ export const getImageFromDb = async (id) => {
   if (result) {
     const base64 = await new Uint8Array(result.data.data);
     const url = await URL.createObjectURL(
-      new Blob([base64], { type: result.data.type }),
+      new Blob([base64], { type: result.data.type })
     );
     return url;
   }
