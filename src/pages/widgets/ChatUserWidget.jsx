@@ -2,10 +2,15 @@ import React from "react";
 import FlexBetween from "../../components/FlexBetween";
 import UserImage from "../../components/UserImage";
 import { Box, Typography, useTheme } from "@mui/material";
-import { getFullName } from "../../utils/utils";
+import { getFullName, getLastSeenTime } from "../../utils/utils";
 
-const ChatUserWidget = ({ eachFriend, setSelectedChatUser }) => {
-  const { _id, firstName, lastName, picturePath } = eachFriend;
+const ChatUserWidget = ({
+  eachFriend,
+  setSelectedChatUser,
+  setSearchedUserText,
+}) => {
+  const { _id, firstName, lastName, picturePath,messageCount, lastSeen  } = eachFriend;
+  console.log('USER:::',eachFriend)
   const { palette } = useTheme();
   const main = palette.neutral.main;
   const medium = palette.neutral.medium;
@@ -17,7 +22,10 @@ const ChatUserWidget = ({ eachFriend, setSelectedChatUser }) => {
       }}
       padding={"10px"}
       borderBottom={`1px solid ${neutralLight}`}
-      onClick={() => setSelectedChatUser(eachFriend)}
+      onClick={() => {
+        setSelectedChatUser(eachFriend);
+        setSearchedUserText("");
+      }}
     >
       <FlexBetween width={"100%"}>
         <FlexBetween gap={"1.5rem"}>
@@ -33,7 +41,7 @@ const ChatUserWidget = ({ eachFriend, setSelectedChatUser }) => {
         </FlexBetween>
         <FlexBetween>
           <Box onClick={() => console.log("first")}>
-            <Typography component={"h6"}>12:56</Typography>
+            <Typography component={"h6"}>{getLastSeenTime(lastSeen)}</Typography>
             <Typography
               color={"white"}
               fontSize={"0.75rem"}
@@ -45,7 +53,7 @@ const ChatUserWidget = ({ eachFriend, setSelectedChatUser }) => {
                 borderRadius={"40%"}
                 padding={"1px 3px"}
               >
-                3
+                {messageCount}
               </Typography>
             </Typography>
           </Box>

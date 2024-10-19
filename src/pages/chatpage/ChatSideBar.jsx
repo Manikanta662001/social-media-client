@@ -2,7 +2,14 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUserContext } from "../../components/authContext/AuthContext";
 import { getFullName, getUserFriends } from "../../utils/utils";
-import { Box, IconButton, InputBase, TextField, useTheme } from "@mui/material";
+import {
+  Box,
+  IconButton,
+  InputBase,
+  TextField,
+  useTheme,
+  useMediaQuery,
+} from "@mui/material";
 import ChatUserWidget from "../widgets/ChatUserWidget";
 import FlexBetween from "../../components/FlexBetween";
 import { Search } from "@mui/icons-material";
@@ -19,6 +26,7 @@ const ChatSideBar = (props) => {
     setChatFriends,
   } = props;
   const { user } = useUserContext();
+  const isNonMobileScreens = useMediaQuery("(min-width: 1000px)");
   const { _id } = user;
   const [loading, setLoading] = useState(true);
   const [searchedUser, setSearchedUser] = useState("");
@@ -60,10 +68,10 @@ const ChatSideBar = (props) => {
       ) : (
         <>
           <FlexBetween borderBottom={"1px solid lightgrey"}>
-            <IconButton onClick={handleBack}>
+            <IconButton onClick={handleBack} title="back">
               <KeyboardBackspaceIcon />
             </IconButton>
-            <Box padding={"8px 5px"}>
+            <Box padding={"8px 5px"} width={"100%"}>
               <FlexBetween
                 backgroundColor={neutralLight}
                 borderRadius="9px"
@@ -95,6 +103,7 @@ const ChatSideBar = (props) => {
                     key={"sidebar" + eachFriend.firstName}
                     eachFriend={eachFriend}
                     setSelectedChatUser={setSelectedChatUser}
+                    setSearchedUserText={setSearchedUser}
                   />
                 );
               })

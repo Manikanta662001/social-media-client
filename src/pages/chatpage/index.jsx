@@ -15,7 +15,11 @@ const ChatPage = () => {
       gap="0.5rem"
       justifyContent="space-between"
     >
-      <Box flexBasis={isNonMobileScreens ? "24%" : undefined} height={"100vh"}>
+      <Box
+        flexBasis={isNonMobileScreens ? "24%" : undefined}
+        display={!isNonMobileScreens && selectedChatUser && "none"}
+        height={"100vh"}
+      >
         <ChatSideBar
           setSelectedChatUser={setSelectedChatUser}
           allChatFriends={allChatFriends}
@@ -27,9 +31,11 @@ const ChatPage = () => {
       <Box
         flexBasis={isNonMobileScreens ? "76%" : undefined}
         sx={{ background: "#c9c9c1" }}
+        position={!selectedChatUser && "relative"}
       >
         <ChatWindow
           selectedChatUser={selectedChatUser}
+          setSelectedChatUser={setSelectedChatUser}
           chatFriends={chatFriends}
           setChatFriends={setChatFriends}
         />
