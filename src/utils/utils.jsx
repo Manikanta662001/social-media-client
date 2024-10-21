@@ -53,9 +53,8 @@ export const getTokenFromCookie = () => {
     } else {
       return "";
     }
-  }
-  else {
-    return ''
+  } else {
+    return "";
   }
 };
 
@@ -106,5 +105,30 @@ export const getImageFromDb = async (id) => {
       new Blob([base64], { type: result.data.type })
     );
     return url;
+  }
+};
+
+// Utility debounce function
+export const debounce = (func, delay) => {
+  let timeout;
+  return (...args) => {
+    if (timeout) clearTimeout(timeout);
+    timeout = setTimeout(() => {
+      func(...args);
+    }, delay);
+  };
+};
+
+export const getLastSeenTime = (date) => {
+  const lastSeenDate = new Date(date).toLocaleDateString();
+  let yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+  yesterday = yesterday.toLocaleDateString();
+  if (lastSeenDate === new Date().toLocaleDateString()) {
+    return formatTime(date);
+  } else if (lastSeenDate === yesterday) {
+    return "Yesterday";
+  } else {
+    return lastSeenDate;
   }
 };

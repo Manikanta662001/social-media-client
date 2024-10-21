@@ -107,6 +107,9 @@ const Form = () => {
       register(values, onSubmitProps);
     }
   };
+  const handleForgotPassword = () => {
+    navigate("/forgotpwd");
+  };
   return (
     <Formik
       initialValues={
@@ -271,6 +274,7 @@ const Form = () => {
                 sx={{
                   textDecoration: "underline",
                   color: palette.primary.main,
+                  mb: "5px",
                   "&:hover": {
                     cursor: "pointer",
                     color: palette.primary.dark,
@@ -281,6 +285,21 @@ const Form = () => {
                   ? "Don't have an account? Sign Up here."
                   : "Already have an account? Login here."}
               </Typography>
+              {getpage(pageType) && (
+                <Typography
+                  sx={{
+                    textDecoration: "underline",
+                    color: palette.primary.main,
+                    "&:hover": {
+                      cursor: "pointer",
+                      color: palette.primary.dark,
+                    },
+                  }}
+                  onClick={handleForgotPassword}
+                >
+                  Forgot Password
+                </Typography>
+              )}
             </Box>
           </form>
         </>

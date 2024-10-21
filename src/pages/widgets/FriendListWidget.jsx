@@ -41,6 +41,9 @@ const FriendListWidget = ({ userId }) => {
             />
           );
         })}
+        {userFriends.length == 0 && (
+          <Typography component={"p"}>There are No Friends🙁.</Typography>
+        )}
       </Box>
     </WidgetWrapper>
   );

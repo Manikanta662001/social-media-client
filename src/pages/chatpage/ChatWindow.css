@@ -40,9 +40,44 @@
 .chat-body::-webkit-scrollbar {
   width: 0;
 }
+.chat-body .down-arrow {
+  position: absolute;
+  background-color: aliceblue;
+  bottom: 5%;
+  right: 15px;
+  z-index: 10;
+}
+.chat-body .down-arrow:hover {
+  background-color: #dbf8c6;
+}
+.wrapper-div {
+  position: absolute;
+  top: calc(50% - 23.3px);
+  right: calc(50% - 240px);
+}
+.encrypt-txt-wrapper {
+  width: 100% !important;
+}
+
+.encrypt-txt-wrapper > p {
+  background-color: #dbf8c6 !important;
+  text-align: center !important;
+  padding: 5px 10px !important;
+  width: 31% !important;
+  margin: auto !important;
+}
+.encrypt-txt-wrapper > p .MuiSvgIcon-root {
+  font-size: small;
+}
 .loading-indicator {
   text-align: center;
   width: 100% !important;
   position: relative;
   top: 50%;
+}
+.chat-body .dots-loading-wrapper {
+  width: fit-content !important;
+  background: #dbf8c6 !important;
+  padding: 10px 10px !important;
+  border-radius: 5px;
 }

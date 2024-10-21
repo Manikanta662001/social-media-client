@@ -2,14 +2,29 @@ import React from "react";
 import FlexBetween from "../../components/FlexBetween";
 import UserImage from "../../components/UserImage";
 import { Box, Typography, useTheme } from "@mui/material";
-import { getFullName } from "../../utils/utils";
+import { getFullName, getLastSeenTime } from "../../utils/utils";
+import { useUserContext } from "../../components/authContext/AuthContext";
 
-const ChatUserWidget = ({ eachFriend, setSelectedChatUser }) => {
-  const { _id, firstName, lastName, picturePath } = eachFriend;
+const ChatUserWidget = ({
+  eachFriend,
+  setSelectedChatUser,
+  setSearchedUserText,
+}) => {
+  const { _id, firstName, lastName, picturePath, messageCount, lastSeen } =
+    eachFriend;
   const { palette } = useTheme();
   const main = palette.neutral.main;
   const medium = palette.neutral.medium;
   const neutralLight = palette.neutral.light;
+  const { socket, roomId } = useUserContext();
+  const handleSelectedUser = () => {
+    setSelectedChatUser(eachFriend);
+    setSearchedUserText("");
+    socket.emit("clearMsgCount", {
+      roomId,
+      userId: _id,
+    });
+  };
   return (
     <FlexBetween
       sx={{
@@ -17,7 +32,9 @@ const ChatUserWidget = ({ eachFriend, setSelectedChatUser }) => {
       }}
       padding={"10px"}
       borderBottom={`1px solid ${neutralLight}`}
-      onClick={() => setSelectedChatUser(eachFriend)}
+      onClick={() => {
+        handleSelectedUser();
+      }}
     >
       <FlexBetween width={"100%"}>
         <FlexBetween gap={"1.5rem"}>
@@ -26,27 +43,31 @@ const ChatUserWidget = ({ eachFriend, setSelectedChatUser }) => {
             <Typography color={main} variant="h5" fontWeight={"500"}>
               {getFullName(eachFriend)}
             </Typography>
-            <Typography color={medium} fontSize={"0.75rem"}>
+            {/* <Typography color={medium} fontSize={"0.75rem"}>
               hello
-            </Typography>
+            </Typography> */}
           </Box>
         </FlexBetween>
         <FlexBetween>
           <Box onClick={() => console.log("first")}>
-            <Typography component={"h6"}>12:56</Typography>
+            <Typography component={"h6"}>
+              {getLastSeenTime(lastSeen)}
+            </Typography>
             <Typography
               color={"white"}
               fontSize={"0.75rem"}
               textAlign={"center"}
             >
-              <Typography
-                component={"span"}
-                sx={{ background: "green" }}
-                borderRadius={"40%"}
-                padding={"1px 3px"}
-              >
-                3
-              </Typography>
+              {messageCount > 0 && (
+                <Typography
+                  component={"span"}
+                  sx={{ background: "green" }}
+                  borderRadius={"40%"}
+                  padding={"1px 3px"}
+                >
+                  {messageCount}
+                </Typography>
+              )}
             </Typography>
           </Box>
         </FlexBetween>

@@ -10,6 +10,7 @@ import { useUserContext } from "./components/authContext/AuthContext";
 import { getTokenFromCookie, notification } from "./utils/utils";
 import { BE_URL } from "./utils/constants";
 import ChatPage from "./pages/chatpage/index";
+import ForgotPwdPage from "./pages/forgotpasswordpage/ForgotPwdPage";
 
 function App() {
   const { mode, isLogedIn, setUser, setIsLogedIn } = useUserContext();
@@ -32,11 +33,11 @@ function App() {
         navigate("/home");
       }
     } catch (error) {
-      notification('',error.message);
+      notification("", error.message);
     }
   };
   useEffect(() => {
-    if (!hasFetched.current){
+    if (!hasFetched.current) {
       getUser();
       hasFetched.current = true;
     }
@@ -47,6 +48,7 @@ function App() {
         <CssBaseline />
         <Routes>
           <Route path="/" element={<LoginPage />} />
+          <Route path="/forgotpwd" element={<ForgotPwdPage />} />
           <Route
             path="/home"
             element={isLogedIn ? <HomePage /> : <Navigate to={"/"} />}

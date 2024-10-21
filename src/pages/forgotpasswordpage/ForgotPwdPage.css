@@ -1,0 +1,26 @@
+.otp-wrapper {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 5px;
+  gap: 10px;
+}
+.otp-wrapper input {
+  max-width: 14%;
+  text-align: center;
+  padding: 13px 15px;
+  border-radius: 5px;
+  border: 1px solid #00d5fa;
+  font-size: large;
+}
+@media screen and (max-width: 900px) {
+  .otp-wrapper {
+    gap: 4px;
+  }
+  .otp-wrapper input {
+    text-align: center;
+    padding: 12px 2px;
+    border-radius: 5px;
+    border: 1px solid #00d5fa;
+    font-size: large;
+  }
+}
