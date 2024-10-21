@@ -42,7 +42,6 @@ const ChatWindow = ({
   const isNonMobileScreens = useMediaQuery("(min-width: 1000px)");
   const [messageText, setMessageText] = useState("");
   const [allMessages, setAllMessages] = useState([]);
-  const [roomId, setRoomId] = useState("");
   const [showArrowIcon, setShowArrowIcon] = useState(false);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [msgTyping, setMsgTyping] = useState(false);
@@ -51,7 +50,7 @@ const ChatWindow = ({
   const fileInputref = useRef(null);
   const theme = useTheme();
   const navigate = useNavigate();
-  const { user, socket } = useUserContext();
+  const { user, socket, roomId, setRoomId } = useUserContext();
   const neutralLight = theme.palette.neutral.light;
   const dark = theme.palette.neutral.dark;
   // const medium = theme.palette.neutral.medium;
@@ -62,7 +61,7 @@ const ChatWindow = ({
     e,
     messageType = "message",
     fileLink = "",
-    text
+    text,
   ) => {
     e.preventDefault();
     if (
@@ -84,7 +83,7 @@ const ChatWindow = ({
       setMessageText("");
       //we are moving the selectedChatUser to top
       const selectedUserIndex = chatFriends.findIndex(
-        (user) => user._id === selectedChatUser._id
+        (user) => user._id === selectedChatUser._id,
       );
       if (selectedUserIndex !== 0) {
         const clonedObj = [...chatFriends];
@@ -153,7 +152,18 @@ const ChatWindow = ({
   };
 
   const handleBack = () => {
+    socket.emit("updateLastSeen", {
+      selectedId: user._id,
+      lastSeen: new Date(),
+    });
+    socket.emit("leaveRoom", { roomId });
     setSelectedChatUser(null);
+  };
+  const handleInputBlur = () => {
+    socket.emit("msgnottyping", {
+      roomId,
+      to: selectedChatUser._id,
+    });
   };
 
   const handleInputKeyDown = (e) => {
@@ -161,35 +171,33 @@ const ChatWindow = ({
       roomId,
       to: selectedChatUser._id,
     });
-    // Call the debounced function to emit "msgnottyping" event after 2 seconds of inactivity
-    emitNotTyping(selectedChatUser._id);
   };
   // Debounced function for emitting "msgnottyping"
   const emitNotTyping = useCallback(
     debounce((id) => {
-      console.log('DEBOUNCE:::',id,selectedChatUser)
       socket.emit("msgnottyping", {
         roomId,
         to: id,
       });
-    }, 1000),
-    []
+      setMsgTyping(false);
+    }, 2000),
+    [selectedChatUser?._id],
   );
   socket.off("message").on("message", (singleMessage) => {
     const { to } = singleMessage;
     if (user._id === to.id) {
+      setMsgTyping(false);
       setAllMessages([...allMessages, singleMessage]);
     }
   });
   socket.off("msgtyping").on("msgtyping", ({ roomId, to }) => {
     if (user._id === to) {
-      console.log('TYPING::::')
       setMsgTyping(true);
+      emitNotTyping(selectedChatUser?._id);
     }
   });
   socket.off("msgnottyping").on("msgnottyping", ({ roomId, to }) => {
     if (user._id === to) {
-      console.log('NOTTYPING::::')
       setMsgTyping(false);
     }
   });
@@ -239,16 +247,15 @@ const ChatWindow = ({
       const chatBodyElement = chatBodyRef.current;
       const { scrollTop, scrollHeight, clientHeight } = chatBodyElement;
       if (clientHeight + scrollTop >= scrollHeight - 70) {
-        // setTimeout(() => {
+        setTimeout(() => {
           chatBodyElement.scrollTo({
             top: chatBodyElement.scrollHeight,
             behavior: "smooth",
           });
-        // }, 300);
+        }, 100);
       }
     }
   }, [msgTyping]);
-
   return (
     <div className={!selectedChatUser && "wrapper-div"}>
       {selectedChatUser ? (
@@ -365,7 +372,7 @@ const ChatWindow = ({
                     onChange={(e) => setMessageText(e.target.value)}
                     onKeyUp={handleKeyUp}
                     onKeyDown={handleInputKeyDown}
-                    // onBlur={handleInputBlur}
+                    onBlur={handleInputBlur}
                   />
                 </FlexBetween>
               </Box>

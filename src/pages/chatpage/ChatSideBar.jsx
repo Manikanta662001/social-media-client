@@ -25,7 +25,7 @@ const ChatSideBar = (props) => {
     chatFriends,
     setChatFriends,
   } = props;
-  const { user } = useUserContext();
+  const { user, setUser, socket } = useUserContext();
   const isNonMobileScreens = useMediaQuery("(min-width: 1000px)");
   const { _id } = user;
   const [loading, setLoading] = useState(true);
@@ -39,6 +39,10 @@ const ChatSideBar = (props) => {
   const alt = theme.palette.background.alt;
 
   const handleBack = () => {
+    socket.emit("updateLastSeen", {
+      selectedId: _id,
+      lastSeen: new Date(),
+    });
     navigate(-1);
   };
 
@@ -59,6 +63,39 @@ const ChatSideBar = (props) => {
     );
     setChatFriends(users);
   }, [searchedUser]);
+
+  socket.off("msgCount").on("msgCount", ({ from, receipientUser }) => {
+    if (user._id === from) {
+      setUser((prevUser) => ({
+        ...prevUser,
+        messageCount: receipientUser.messageCount,
+      }));
+    }
+    const allFriends = chatFriends.map((item) => {
+      if (item._id === receipientUser._id) {
+        return receipientUser;
+      }
+      return item;
+    });
+    setChatFriends(allFriends);
+  });
+  socket
+    .off("updateLastSeen")
+    .on("updateLastSeen", ({ id, receipientUser }) => {
+      if (user._id === id) {
+        setUser((prevUser) => ({
+          ...prevUser,
+          messageCount: receipientUser.lastSeen,
+        }));
+      }
+      const allFriends = chatFriends.map((item) => {
+        if (item._id === receipientUser._id) {
+          return receipientUser;
+        }
+        return item;
+      });
+      setChatFriends(allFriends);
+    });
   return (
     <>
       {loading ? (

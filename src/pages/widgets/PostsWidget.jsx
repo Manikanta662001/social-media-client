@@ -5,7 +5,7 @@ import { useUserContext } from "../../components/authContext/AuthContext";
 import PostWidget from "./PostWidget";
 import { Box, CircularProgress } from "@mui/material";
 
-const PostsWidget = ({ userId, isProfile = false, sameUserOrNot = true }) => {
+const PostsWidget = ({ userId, isProfile = false, sameUserOrNot }) => {
   const { allPosts, setAllPosts } = useUserContext();
   const [loading, setLoading] = useState(true);
   const getPosts = async () => {
@@ -67,7 +67,7 @@ const PostsWidget = ({ userId, isProfile = false, sameUserOrNot = true }) => {
               userPicturePath={post.userPicturePath}
               likes={post.likes}
               comments={post.comments}
-              sameUserOrNot={sameUserOrNot}
+              sameUserOrNot={sameUserOrNot ?? userId !== post.userId}
             />
           ))}
       </Box>

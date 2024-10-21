@@ -2,9 +2,9 @@ import React, { createContext, useContext, useState } from "react";
 import io from "socket.io-client";
 import { BE_URL } from "../../utils/constants";
 //for local
-const socket = io("http://localhost:5000");
+// const socket = io("http://localhost:5000");
 //for live
-// const socket = io(BE_URL);
+const socket = io(BE_URL);
 
 const UserContext = createContext();
 const AuthContext = ({ children }) => {
@@ -12,6 +12,7 @@ const AuthContext = ({ children }) => {
   const [isLogedIn, setIsLogedIn] = useState(false);
   const [user, setUser] = useState({});
   const [allPosts, setAllPosts] = useState([]);
+  const [roomId, setRoomId] = useState("");
   const allValues = {
     mode,
     setMode,
@@ -22,6 +23,8 @@ const AuthContext = ({ children }) => {
     isLogedIn,
     setIsLogedIn,
     socket,
+    roomId,
+    setRoomId,
   };
   return (
     <div>
