@@ -33,6 +33,13 @@
   margin-left: 50%;
   background-color: #dbf8c6;
 }
+.chat-body > div p button{
+  position: absolute;
+    left: 3px;
+    bottom: 2px;
+    font-size: 4px;
+    padding: 0px;
+}
 .chat-body {
   overflow: auto;
   height: calc(100vh - 115px);
