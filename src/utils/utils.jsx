@@ -102,7 +102,7 @@ export const getImageFromDb = async (id) => {
   if (result) {
     const base64 = await new Uint8Array(result.data.data);
     const url = await URL.createObjectURL(
-      new Blob([base64], { type: result.data.type })
+      new Blob([base64], { type: result.type })
     );
     return url;
   }

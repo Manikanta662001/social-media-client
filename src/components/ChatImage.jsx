@@ -22,11 +22,16 @@ const ChatImage = ({ currentUser, singleMessage }) => {
     };
     fetchImage();
   }, [fileLink]);
-  console.log("URL::::",imageUrl,singleMessage)
   return (
     <Box className={currentUser._id === from?.id && "user-message"}>
       <Typography component={"p"}>
-        <img src={imageUrl} alt="no image" />
+        {singleMessage.type == "image" ? (
+          <img src={imageUrl} alt="no image" />
+        ) : (
+          <>
+          <iframe src={imageUrl} width="100%" title="PDF Viewer"></iframe>
+          <span className="file-name">{singleMessage.content}</span></>
+        )}
         <span>{time}</span>
         <IconButton onClick={handleDownload}>
           <DownloadIcon />
