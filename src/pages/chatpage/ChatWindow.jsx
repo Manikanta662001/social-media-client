@@ -47,6 +47,7 @@ const ChatWindow = ({
   const [msgTyping, setMsgTyping] = useState(false);
   const open = Boolean(anchorEl);
   const chatBodyRef = useRef(null);
+  const imageInputref = useRef(null);
   const fileInputref = useRef(null);
   const theme = useTheme();
   const navigate = useNavigate();
@@ -61,12 +62,13 @@ const ChatWindow = ({
     e,
     messageType = "message",
     fileLink = "",
-    text,
+    text
   ) => {
     e.preventDefault();
     if (
       (messageType === "message" && messageText.trim() !== "") ||
-      messageType === "image"
+      messageType === "image" ||
+      messageType === "document"
     ) {
       const date = new Date().toISOString();
       const sendingMsg = {
@@ -83,7 +85,7 @@ const ChatWindow = ({
       setMessageText("");
       //we are moving the selectedChatUser to top
       const selectedUserIndex = chatFriends.findIndex(
-        (user) => user._id === selectedChatUser._id,
+        (user) => user._id === selectedChatUser._id
       );
       if (selectedUserIndex !== 0) {
         const clonedObj = [...chatFriends];
@@ -116,10 +118,14 @@ const ChatWindow = ({
   const handleMenuClose = () => {
     setAnchorEl(null);
   };
-  const handleImageClick = () => {
-    fileInputref.current.click();
+  const handleMenuItemClick = (name) => {
+    if (name === "image") {
+      imageInputref.current.click();
+    } else {
+      fileInputref.current.click();
+    }
   };
-  const handleFileSelect = async (e) => {
+  const handleFileSelect = async (e, name) => {
     handleMenuClose();
     const selectedFile = e.target.files[0];
     if (selectedFile) {
@@ -131,7 +137,7 @@ const ChatWindow = ({
           body: formData,
         });
         const result = await response.json();
-        handleSendMessage(e, "image", result._id, selectedFile.name);
+        handleSendMessage(e, name, result._id, selectedFile.name);
       } catch (error) {}
     }
   };
@@ -181,7 +187,7 @@ const ChatWindow = ({
       });
       setMsgTyping(false);
     }, 2000),
-    [selectedChatUser?._id],
+    [selectedChatUser?._id]
   );
   socket.off("message").on("message", (singleMessage) => {
     const { to } = singleMessage;
@@ -320,7 +326,10 @@ const ChatWindow = ({
                       </Box>
                     </>
                   );
-                } else if (singleMessage.type === "image") {
+                } else if (
+                  singleMessage.type === "image" ||
+                  singleMessage.type === "document"
+                ) {
                   return (
                     <>
                       <DateButton
@@ -395,14 +404,25 @@ const ChatWindow = ({
               horizontal: "center",
             }}
           >
-            <MenuItem onClick={handleImageClick}>
+            <MenuItem onClick={() => handleMenuItemClick("image")}>
+              <input
+                type="file"
+                style={{ display: "none" }}
+                ref={imageInputref}
+                onChange={(e) => handleFileSelect(e, "image")}
+                accept=".png,.jpg,.jpeg,.gif"
+              />
+              Image
+            </MenuItem>
+            <MenuItem onClick={() => handleMenuItemClick("document")}>
               <input
                 type="file"
                 style={{ display: "none" }}
                 ref={fileInputref}
-                onChange={handleFileSelect}
+                onChange={(e) => handleFileSelect(e, "document")}
+                accept=".pdf,.txt,.doc,.docx"
               />
-              Image
+              Document
             </MenuItem>
           </Menu>
         </div>
