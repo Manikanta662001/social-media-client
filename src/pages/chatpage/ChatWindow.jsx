@@ -99,11 +99,6 @@ const ChatWindow = ({
 
   const handleScroll = () => {
     const { scrollTop, scrollHeight, clientHeight } = chatBodyRef.current;
-    console.log("SCROLL::::", {
-      scrollTop,
-      scrollHeight,
-      clientHeight,
-    });
     if (scrollTop + clientHeight <= scrollHeight - 100) {
       setShowArrowIcon(true);
     } else {
