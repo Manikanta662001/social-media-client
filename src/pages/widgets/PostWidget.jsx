@@ -42,7 +42,6 @@ const PostWidget = (props) => {
   const main = palette.neutral.main;
   const isLiked = Boolean(likes[user._id]);
   const likeCount = Object.keys(likes).length;
-console.log('USER:::',user,props)
   const handleLike = async (postId) => {
     try {
       const response = await fetch(BE_URL + `/posts/${postId}/like`, {

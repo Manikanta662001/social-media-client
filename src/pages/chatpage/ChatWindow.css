@@ -97,3 +97,8 @@
   padding: 10px 10px !important;
   border-radius: 5px;
 }
+@media screen and (max-width:600px) {
+  .chat-body > div p img {
+    width: -webkit-fill-available;
+  }
+}
